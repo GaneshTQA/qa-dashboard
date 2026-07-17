@@ -1,0 +1,1073 @@
+
+
+Qa case tracker · HTML
+<title>QA Analysis Tracker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+<style>
+.hud{--bg:#080B10;--panel:#0D131C;--panel2:#111926;--cyan:#3FE0F0;--cyan-dim:#1A6E78;--gold:#FFB627;--red:#E5484D;--green:#3FD68C;--txt:#D6EEF2;--txt-dim:#7C93A0;--border:rgba(63,224,240,0.28);
+  --font-body:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  font-family:var(--font-body);color:var(--txt);background:var(--bg);padding:20px;border-radius:4px;position:relative;}
+.hud.theme-light{--bg:#F4F6F8;--panel:#FFFFFF;--panel2:#EEF1F4;--txt:#1B222B;--txt-dim:#5B6472;--border:rgba(20,90,100,0.2);}
+.hud *{box-sizing:border-box;}
+.hud-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.hud-greeting{font-size:16px;font-weight:700;}
+.hud-sub{font-size:11px;color:var(--txt-dim);margin-top:3px;}
+.hud-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:14px;flex-wrap:wrap;}
+.hud-select-mini{width:auto;padding:4px 8px;font-size:12px;}
+.hud-navbtn{background:transparent;border:1px solid var(--border);color:var(--txt-dim);padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);}
+.hud-navbtn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(63,224,240,0.08);}
+.hud-body{display:grid;grid-template-columns:210px 1fr;gap:16px;}
+.hud-panel{background:var(--panel);border:1px solid var(--border);clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);padding:14px;}
+.hud-roster-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;margin-bottom:6px;background:var(--panel2);border-left:2px solid transparent;cursor:pointer;font-weight:600;font-size:13px;color:var(--txt-dim);}
+.hud-roster-item:hover{border-left-color:var(--cyan-dim);color:var(--txt);}
+.hud-roster-item.active{border-left-color:var(--cyan);color:var(--cyan);background:rgba(63,224,240,0.07);}
+.hud-count{font-size:11px;color:var(--txt-dim);}
+.hud-label{font-size:11px;letter-spacing:0.5px;color:var(--cyan-dim);text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.hud-input,.hud-textarea,.hud-select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--txt);padding:8px 10px;font-family:var(--font-body);font-size:13.5px;outline:none;}
+.hud-input:focus,.hud-textarea:focus,.hud-select:focus{border-color:var(--cyan);box-shadow:0 0 6px rgba(63,224,240,0.35);}
+.hud-textarea{min-height:44px;resize:vertical;}
+.hud-btn{background:transparent;border:1px solid var(--cyan-dim);color:var(--cyan);padding:6px 12px;font-family:var(--font-body);font-size:12px;font-weight:600;cursor:pointer;clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);}
+.hud-btn:hover{background:rgba(63,224,240,0.12);border-color:var(--cyan);}
+.hud-btn.primary{border-color:var(--cyan);background:rgba(63,224,240,0.1);}
+.hud-btn.primary:hover{background:rgba(63,224,240,0.22);}
+.hud-btn-sm{padding:4px 9px;font-size:11px;}
+.hud-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;}
+.hud-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.hud-chip{border:1px solid var(--border);padding:5px 11px;font-size:11.5px;font-weight:600;cursor:pointer;color:var(--txt-dim);background:var(--bg);clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px);}
+.hud-chip.on{color:var(--bg);font-weight:700;border-color:transparent;}
+.hud-toolbar{display:flex;justify-content:space-between;align-items:center;margin:14px 0 10px;flex-wrap:wrap;gap:8px;}
+.hud-stat{font-size:12px;font-weight:600;color:var(--cyan-dim);}
+.hud-btns{display:flex;gap:8px;flex-wrap:wrap;}
+table.hud-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+table.hud-table th{text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--cyan-dim);border-bottom:1px solid var(--border);padding:7px 8px;white-space:nowrap;}
+table.hud-table td{padding:8px 8px;border-bottom:1px solid rgba(63,224,240,0.08);vertical-align:top;color:var(--txt);}
+.hud-badge{display:inline-block;padding:2px 8px;font-size:10.5px;font-weight:700;margin:1px 3px 1px 0;clip-path:polygon(4px 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%,0 4px);}
+.hud-del{background:transparent;border:none;color:var(--red);cursor:pointer;font-size:14px;}
+.hud-edit{background:transparent;border:none;color:var(--cyan);cursor:pointer;font-size:13px;margin-right:8px;}
+.hud-empty{padding:26px;text-align:center;color:var(--txt-dim);font-size:12.5px;}
+.hud-msg{font-size:11.5px;margin-left:10px;}
+.hud-add{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+.hud-bulklink{font-size:11px;color:var(--cyan-dim);cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+.hud-toast{position:absolute;top:14px;right:14px;background:var(--panel2);border:1px solid var(--green);color:var(--green);padding:10px 18px;font-size:13px;font-weight:700;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);opacity:0;transform:translateY(-8px);transition:opacity .25s ease,transform .25s ease;pointer-events:none;z-index:50;}
+.hud-toast.show{opacity:1;transform:translateY(0);}
+.hud-toast.err{border-color:var(--red);color:var(--red);}
+.hud-period{background:var(--panel2);border:1px solid var(--border);padding:10px 12px;margin-bottom:14px;}
+.hud-period-title{font-size:12.5px;font-weight:700;color:var(--gold);margin-bottom:2px;}
+.hud-footer{margin-top:18px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--txt-dim);text-align:center;letter-spacing:.2px;}
+.manager-category-picker{position:relative;min-width:210px;}.manager-category-toggle{margin-top:7px;width:100%;text-align:left;}.manager-category-options{display:none;position:absolute;left:0;right:0;top:100%;z-index:20;background:var(--panel);border:1px solid var(--cyan-dim);padding:6px;max-height:190px;overflow-y:auto;box-shadow:0 8px 18px rgba(0,0,0,.32);}.manager-category-options.open{display:block;}.manager-category-option{display:flex;align-items:center;gap:7px;width:100%;padding:5px 4px;border:0;background:transparent;color:var(--txt);font-size:11.5px;text-align:left;cursor:pointer;}.manager-category-option:hover{background:var(--panel2);}.manager-category-dot{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border:1px solid var(--cyan-dim);border-radius:50%;font-size:10px;line-height:1;color:transparent;flex:none;}.manager-category-option.on .manager-category-dot{background:var(--cyan);border-color:var(--cyan);color:var(--bg);}
+</style>
+<div class="hud">
+  <div class="hud-topbar">
+    <div>
+      <div class="hud-greeting" id="hudGreeting"></div>
+      <div class="hud-sub">QA case review + error log system</div>
+    </div>
+    <button class="hud-btn hud-btn-sm" id="qaThemeToggle"><i class="ti ti-moon" id="qaThemeIcon" aria-hidden="true"></i> <span id="qaThemeLabel">dark</span></button>
+  </div>
+  <div class="hud-nav">
+    <div style="display:flex;gap:8px;">
+      <button class="hud-navbtn" id="navReport">QA report</button>
+      <button class="hud-navbtn" id="navHistory">History</button>
+      <button class="hud-navbtn" id="navManager">Manager approval</button>
+    </div>
+    <div id="hudPeriodMini" style="display:flex;gap:6px;align-items:center;"></div>
+  </div>
+  <div class="hud-body">
+    <div class="hud-panel" id="hudLeftPanel"></div>
+    <div id="hudMainPanel"></div>
+  </div>
+  <div class="hud-footer">Created and maintained by Sriganes — QA and Trainer</div>
+</div>
+<script>
+(function(){
+  const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const WEEKS = ["Week 1","Week 2","Week 3","Week 4","Week 5"];
+  const CATS = ["N/A - No error found","Initiation & Communication","Output","Rebate Flow & Logic","Rebates Discrepancy","Sales Alignment","SOP Knowledge"];
+  const catColors = {
+    "N/A - No error found": {bg:"#3FD68C",text:"#062A19"},
+    "Initiation & Communication": {bg:"#3FE0F0",text:"#062226"},
+    "Output": {bg:"#9B8CFF",text:"#1A1440"},
+    "Rebate Flow & Logic": {bg:"#FFB627",text:"#3A2500"},
+    "Rebates Discrepancy": {bg:"#E5484D",text:"#3A0808"},
+    "Sales Alignment": {bg:"#5DCAA5",text:"#04342C"},
+    "SOP Knowledge": {bg:"#FF8A5C",text:"#3A1400"}
+  };
+  const CUSTOM_PALETTE = [
+    {bg:"#F2C6E8",text:"#5C1249"},
+    {bg:"#B7E3A8",text:"#1E4212"},
+    {bg:"#A9C9F5",text:"#122C5C"},
+    {bg:"#F5D48A",text:"#4A3200"},
+    {bg:"#C9B6F2",text:"#2E1863"},
+    {bg:"#F2A9A0",text:"#5C160D"},
+    {bg:"#8FE0D0",text:"#0A3D34"},
+    {bg:"#F2E28A",text:"#4A3F00"}
+  ];
+ 
+  let members = [];
+  let activeMember = null;
+  let cases = {};
+  let selectedCats = [];
+  let activeView = 'report';
+  let theme = 'dark';
+  let userName = '';
+  let reportMonth = MONTHS[new Date().getMonth()];
+  let reportWeek = 'Week 1';
+  let historyMonth = MONTHS[new Date().getMonth()];
+  let historyWeek = 'Week 1';
+  let historyCache = {};
+  let historyAllCases = [];
+  let historySelectedTab = 'All';
+  let managerMonth = MONTHS[new Date().getMonth()];
+  let managerWeek = 'Week 1';
+  let managerCache = {};
+  let managerAllCases = [];
+  let managerName = '';
+  let customCategories = [];
+  let editingIndex = null;
+  // Works in the original host and in a normal browser preview. Local storage is
+  // the durable copy used after a browser refresh.
+  const storage = {
+    async get(key){
+      try{
+        const value = window.localStorage.getItem('qa-case-tracker:' + key);
+        if(value !== null) return {value};
+      }catch(e){}
+      try{
+        const remote = window.storage && await window.storage.get(key);
+        if(remote && remote.value !== undefined){
+          try{ window.localStorage.setItem('qa-case-tracker:' + key, remote.value); }catch(e){}
+          return remote;
+        }
+      }catch(e){}
+      return null;
+    },
+    async set(key, value){
+      let saved = false;
+      try{ window.localStorage.setItem('qa-case-tracker:' + key, value); saved = true; }catch(e){}
+      try{ if(window.storage){ await window.storage.set(key, value); saved = true; } }catch(e){}
+      if(!saved) throw new Error('Storage is unavailable.');
+    }
+  };
+ 
+  function escapeHtml(s){
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function periodKey(month, week){ return month + '__' + week.replace(/\s+/g, ''); }
+  function periodTitle(month, week){ return 'QA Analysis ' + week + ' ' + month; }
+  function safeKeyPart(s){ return String(s || '').trim().replace(/[\s\/\\'"]+/g, '_'); }
+  function allCategoryNames(){ return CATS.concat(customCategories.map(c => c.name)); }
+  function getCatColor(name){
+    if(catColors[name]) return catColors[name];
+    const custom = customCategories.find(c => c.name === name);
+    if(custom) return {bg: custom.bg, text: custom.text};
+    return {bg:'#444', text:'#fff'};
+  }
+ 
+  function showToast(msg, isErr){
+    const container = document.querySelector('.hud');
+    let toast = document.getElementById('hudToast');
+    if(!toast){ toast = document.createElement('div'); toast.id = 'hudToast'; container.appendChild(toast); }
+    toast.textContent = msg;
+    toast.className = 'hud-toast show' + (isErr ? ' err' : '');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => { toast.className = 'hud-toast' + (isErr ? ' err' : ''); }, 2400);
+  }
+ 
+  async function copyText(text){
+    try{ await navigator.clipboard.writeText(text); return true; }
+    catch(e){
+      try{
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+      }catch(e2){ return false; }
+    }
+  }
+ 
+  function setupBulletTextarea(ta){
+    if(!ta) return;
+    ta.addEventListener('focus', () => { if(ta.value.trim() === ''){ ta.value = '\u2022 '; ta.selectionStart = ta.selectionEnd = ta.value.length; } });
+    ta.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' && !e.shiftKey){
+        e.preventDefault();
+        const start = ta.selectionStart;
+        const insert = '\n\u2022 ';
+        ta.value = ta.value.substring(0, start) + insert + ta.value.substring(start);
+        ta.selectionStart = ta.selectionEnd = start + insert.length;
+      }
+    });
+  }
+ 
+  // ---------- storage ----------
+  async function loadMembers(){
+    try{ const r = await storage.get('members-list'); members = r ? JSON.parse(r.value) : []; }catch(e){ members = []; }
+  }
+  async function saveMembers(){ await storage.set('members-list', JSON.stringify(members)); }
+ 
+  async function loadCustomCategories(){
+    try{ const r = await storage.get('custom-categories'); customCategories = r ? JSON.parse(r.value) : []; }catch(e){ customCategories = []; }
+  }
+  async function saveCustomCategories(){ await storage.set('custom-categories', JSON.stringify(customCategories)); }
+ 
+  async function fetchCases(member, period){
+    try{
+      const r = await storage.get('cases:' + safeKeyPart(member) + ':' + period);
+      const arr = r ? JSON.parse(r.value) : [];
+      arr.forEach(c => { if(typeof c.category === 'string') c.category = [c.category]; });
+      return arr;
+    }catch(e){ return []; }
+  }
+  async function storeCases(member, period, arr){ await storage.set('cases:' + safeKeyPart(member) + ':' + period, JSON.stringify(arr)); }
+  async function fetchHistoryCases(member, period){
+    try{
+      const r = await storage.get('history:' + safeKeyPart(member) + ':' + period);
+      const arr = r ? JSON.parse(r.value) : null;
+      if(arr) arr.forEach(c => { if(typeof c.category === 'string') c.category = [c.category]; });
+      return arr;
+    }catch(e){ return null; }
+  }
+  async function storeHistoryCases(member, period, arr){ await storage.set('history:' + safeKeyPart(member) + ':' + period, JSON.stringify(arr)); }
+ 
+  async function loadName(){ try{ const r = await storage.get('user-name'); return r ? JSON.parse(r.value) : ''; }catch(e){ return ''; } }
+  async function saveName(n){ await storage.set('user-name', JSON.stringify(n)); }
+  async function loadManagerName(){ try{ const r = await storage.get('manager-name'); return r ? JSON.parse(r.value) : ''; }catch(e){ return ''; } }
+  async function saveManagerName(n){ await storage.set('manager-name', JSON.stringify(n)); }
+  async function loadTheme(){ try{ const r = await storage.get('theme'); return r ? JSON.parse(r.value) : 'dark'; }catch(e){ return 'dark'; } }
+  async function saveTheme(t){ await storage.set('theme', JSON.stringify(t)); }
+  async function loadReportPeriod(){
+    try{ const r = await storage.get('report-period'); if(r){ const p = JSON.parse(r.value); return p; } }catch(e){}
+    return null;
+  }
+  async function saveReportPeriod(){ await storage.set('report-period', JSON.stringify({month:reportMonth, week:reportWeek})); }
+ 
+  async function reloadReportPeriod(){
+    const period = periodKey(reportMonth, reportWeek);
+    const results = await Promise.all(members.map(m => fetchCases(m, period)));
+    cases = {};
+    members.forEach((m, i) => { cases[m] = results[i]; });
+  }
+ 
+  // ---------- shared table renderer ----------
+  function renderCaseTable(containerId, list, opts){
+    opts = opts || {};
+    const wrap = document.getElementById(containerId);
+    if(!wrap) return;
+    if(!list || list.length === 0){
+      wrap.innerHTML = '<div class="hud-empty">' + (opts.emptyText || 'no cases logged yet') + '</div>';
+      return;
+    }
+    const showMember = !!opts.showMember;
+    const headerCols = (showMember ? '<th>Member</th>' : '') + '<th>Ticket ID</th><th>Comment</th><th>Category</th><th>Resolution</th><th>Improvement</th><th>Date</th>' + (opts.showReview ? '<th>Status</th><th>Manager comment</th><th>Approved by</th>' : '') + (opts.editable ? '<th></th>' : '');
+    const rows = list.map((c, i) => {
+      const cats = Array.isArray(c.category) ? c.category : [c.category];
+      const badges = cats.map(cat => { const col = getCatColor(cat); return '<span class="hud-badge" style="background:' + col.bg + ';color:' + col.text + ';">' + escapeHtml(cat) + '</span>'; }).join('');
+      const commentHtml = escapeHtml(c.comment).replace(/\n/g, '<br>');
+      return '<tr>' +
+        (showMember ? '<td>' + escapeHtml(c._member || '') + '</td>' : '') +
+        '<td>' + (c.ticketLink ? '<a href="' + escapeHtml(c.ticketLink) + '" target="_blank" style="color:var(--cyan);">' + escapeHtml(c.ticketId) + '</a>' : escapeHtml(c.ticketId)) + '</td>' +
+        '<td style="max-width:200px;">' + commentHtml + '</td>' +
+        '<td style="max-width:220px;">' + badges + '</td>' +
+        '<td style="max-width:150px;">' + escapeHtml(c.resolution) + '</td>' +
+        '<td style="max-width:170px;">' + escapeHtml(c.improvement) + '</td>' +
+        '<td>' + escapeHtml(c.date) + '</td>' +
+        (opts.showReview ? '<td>' + escapeHtml(c.managerStatus || 'Pending') + '</td><td style="max-width:160px;">' + escapeHtml(c.managerComment) + '</td><td>' + escapeHtml(c.approvedBy) + '</td>' : '') +
+        (opts.editable ? '<td><button class="hud-edit" data-idx="' + i + '" title="edit">\u270E</button><button class="hud-del" data-idx="' + i + '" title="delete"><i class="ti ti-trash" aria-hidden="true"></i></button></td>' : '') +
+        '</tr>';
+    }).join('');
+    wrap.innerHTML = '<table class="hud-table"><thead><tr>' + headerCols + '</tr></thead><tbody>' + rows + '</tbody></table>';
+    if(opts.editable){
+      wrap.querySelectorAll('.hud-del').forEach(btn => {
+        btn.onclick = () => {
+          const idx = parseInt(btn.getAttribute('data-idx'), 10);
+          list.splice(idx, 1);
+          opts.onDelete && opts.onDelete();
+        };
+      });
+      wrap.querySelectorAll('.hud-edit').forEach(btn => {
+        btn.onclick = () => {
+          const idx = parseInt(btn.getAttribute('data-idx'), 10);
+          opts.onEdit && opts.onEdit(idx);
+        };
+      });
+    }
+  }
+ 
+  // ---------- greeting / theme / nav ----------
+  function renderGreeting(){
+    const el = document.getElementById('hudGreeting');
+    el.innerHTML = '';
+    const span = document.createElement('span');
+    span.textContent = userName ? ('Hello, ' + userName) : 'Hello! Click to add your name';
+    span.style.cursor = 'pointer';
+    span.onclick = () => {
+      const input = document.createElement('input');
+      input.className = 'hud-input';
+      input.style.cssText = 'display:inline-block;width:180px;font-size:14px;';
+      input.value = userName;
+      el.innerHTML = ''; el.appendChild(input); input.focus();
+      const commit = async () => { userName = input.value.trim(); await saveName(userName); renderGreeting(); };
+      input.addEventListener('keydown', e => { if(e.key === 'Enter') commit(); });
+      input.addEventListener('blur', commit);
+    };
+    el.appendChild(span);
+  }
+ 
+  function applyTheme(){
+    const hud = document.querySelector('.hud');
+    if(theme === 'light') hud.classList.add('theme-light'); else hud.classList.remove('theme-light');
+    document.getElementById('qaThemeLabel').textContent = theme;
+    document.getElementById('qaThemeIcon').className = 'ti ' + (theme === 'dark' ? 'ti-moon' : 'ti-sun');
+  }
+ 
+  function renderNav(){
+    document.getElementById('navReport').className = 'hud-navbtn' + (activeView === 'report' ? ' active' : '');
+    document.getElementById('navHistory').className = 'hud-navbtn' + (activeView === 'history' ? ' active' : '');
+    document.getElementById('navManager').className = 'hud-navbtn' + (activeView === 'manager' ? ' active' : '');
+  }
+ 
+  function renderPeriodMini(){
+    const el = document.getElementById('hudPeriodMini');
+    if(!el) return;
+    if(activeView === 'report'){
+      el.innerHTML = '<select class="hud-select hud-select-mini" id="reportMonthSelect">' + monthOptions(reportMonth) + '</select>' +
+        '<select class="hud-select hud-select-mini" id="reportWeekSelect">' + weekOptions(reportWeek) + '</select>';
+      document.getElementById('reportMonthSelect').onchange = async (e) => { reportMonth = e.target.value; await saveReportPeriod(); await reloadReportPeriod(); if(activeView !== 'report') return; renderRosterList(); await renderReportMain(); };
+      document.getElementById('reportWeekSelect').onchange = async (e) => { reportWeek = e.target.value; await saveReportPeriod(); await reloadReportPeriod(); if(activeView !== 'report') return; renderRosterList(); await renderReportMain(); };
+    } else if(activeView === 'history') {
+      el.innerHTML = '<select class="hud-select hud-select-mini" id="historyMonthSelect">' + monthOptions(historyMonth) + '</select>' +
+        '<select class="hud-select hud-select-mini" id="historyWeekSelect">' + weekOptions(historyWeek) + '</select>';
+      document.getElementById('historyMonthSelect').onchange = async (e) => { historyMonth = e.target.value; await enterHistoryView(); };
+      document.getElementById('historyWeekSelect').onchange = async (e) => { historyWeek = e.target.value; await enterHistoryView(); };
+    } else {
+      el.innerHTML = '<select class="hud-select hud-select-mini" id="managerMonthSelect">' + monthOptions(managerMonth) + '</select>' +
+        '<select class="hud-select hud-select-mini" id="managerWeekSelect">' + weekOptions(managerWeek) + '</select>';
+      document.getElementById('managerMonthSelect').onchange = async (e) => { managerMonth = e.target.value; await enterManagerView(); };
+      document.getElementById('managerWeekSelect').onchange = async (e) => { managerWeek = e.target.value; await enterManagerView(); };
+    }
+  }
+ 
+  function monthOptions(selected){
+    return MONTHS.map(m => '<option value="' + m + '"' + (m === selected ? ' selected' : '') + '>' + m + '</option>').join('');
+  }
+  function weekOptions(selected){
+    return WEEKS.map(w => '<option value="' + w + '"' + (w === selected ? ' selected' : '') + '>' + w + '</option>').join('');
+  }
+ 
+  // ---------- QA report view ----------
+  function renderReportLeft(){
+    const panel = document.getElementById('hudLeftPanel');
+    panel.innerHTML =
+      '<div class="hud-label">Roster</div><div id="hudRosterList"></div>' +
+      '<div class="hud-add">' +
+        '<input type="text" class="hud-input" id="qaNewMember" placeholder="add member name" style="font-size:12px;padding:6px 8px;">' +
+        '<button class="hud-btn hud-btn-sm" id="qaAddMemberBtn">+ add</button>' +
+        '<span class="hud-bulklink" id="qaBulkToggle">paste full list instead</span>' +
+        '<textarea class="hud-textarea" id="qaBulkInput" placeholder="one name per line, or comma separated" style="display:none;min-height:70px;font-size:12px;"></textarea>' +
+        '<button class="hud-btn hud-btn-sm" id="qaBulkAddBtn" style="display:none;">add all</button>' +
+      '</div>';
+    updateReportPeriodTitle();
+    renderRosterList();
+    const addSingleMember = async () => {
+      const input = document.getElementById('qaNewMember');
+      const name = input.value.trim();
+      if(!name){ showToast('Enter a member name.', true); return; }
+      if(members.includes(name)){ showToast('That member is already in the roster.', true); return; }
+      members.push(name);
+      try{ await saveMembers(); }catch(e){ members.pop(); showToast('Could not save the member.', true); return; }
+      cases[name] = await fetchCases(name, periodKey(reportMonth, reportWeek));
+      input.value = '';
+      await selectMember(name);
+    };
+    document.getElementById('qaAddMemberBtn').onclick = addSingleMember;
+    document.getElementById('qaNewMember').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); addSingleMember(); } });
+    document.getElementById('qaBulkToggle').onclick = () => {
+      const ta = document.getElementById('qaBulkInput'); const btn = document.getElementById('qaBulkAddBtn');
+      const show = ta.style.display === 'none';
+      ta.style.display = show ? 'block' : 'none'; btn.style.display = show ? 'inline-block' : 'none';
+    };
+    document.getElementById('qaBulkAddBtn').onclick = async () => {
+      const raw = document.getElementById('qaBulkInput').value;
+      const names = raw.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
+      let added = 0;
+      for(const n of names){ if(!members.includes(n)){ members.push(n); cases[n] = await fetchCases(n, periodKey(reportMonth, reportWeek)); added++; } }
+      if(added > 0) await saveMembers();
+      document.getElementById('qaBulkInput').value = '';
+      renderRosterList();
+      if(!activeMember && members.length > 0) await selectMember(members[0]);
+      showToast(added + ' member(s) added.');
+    };
+  }
+ 
+  function updateReportPeriodTitle(){
+    const el = document.getElementById('reportPeriodTitle');
+    if(el) el.textContent = periodTitle(reportMonth, reportWeek);
+    const exportPreview = document.getElementById('qaExportPreview');
+    if(exportPreview) exportPreview.textContent = 'Exports as: ' + periodTitle(reportMonth, reportWeek);
+  }
+ 
+  function renderRosterList(){
+    const rosterList = document.getElementById('hudRosterList');
+    if(!rosterList) return;
+    rosterList.innerHTML = '';
+    if(members.length === 0){ rosterList.innerHTML = '<div style="font-size:11px;color:var(--txt-dim);padding:8px 2px;">no members yet</div>'; return; }
+    members.forEach(m => {
+      const item = document.createElement('div');
+      item.className = 'hud-roster-item' + (m === activeMember ? ' active' : '');
+      const count = (cases[m] || []).length;
+      item.innerHTML = '<span>' + escapeHtml(m) + '</span><span class="hud-count">' + count + '</span>';
+      item.onclick = () => selectMember(m);
+      rosterList.appendChild(item);
+    });
+  }
+ 
+  async function selectMember(m){
+    activeMember = m;
+    if(!cases[m]) cases[m] = await fetchCases(m, periodKey(reportMonth, reportWeek));
+    renderRosterList();
+    await renderReportMain();
+  }
+ 
+  function renderChips(){
+    const chipsEl = document.getElementById('qaChips');
+    if(!chipsEl) return;
+    chipsEl.innerHTML = '';
+    allCategoryNames().forEach(cat => {
+      const c = getCatColor(cat);
+      const chip = document.createElement('div');
+      chip.className = 'hud-chip' + (selectedCats.includes(cat) ? ' on' : '');
+      if(selectedCats.includes(cat)){ chip.style.background = c.bg; chip.style.color = c.text; }
+      chip.textContent = cat;
+      chip.onclick = () => {
+        if(cat === "N/A - No error found"){
+          selectedCats = selectedCats.includes(cat) ? [] : [cat];
+        } else {
+          selectedCats = selectedCats.filter(x => x !== "N/A - No error found");
+          if(selectedCats.includes(cat)) selectedCats = selectedCats.filter(x => x !== cat);
+          else selectedCats.push(cat);
+        }
+        renderChips();
+      };
+      chipsEl.appendChild(chip);
+    });
+    const addChip = document.createElement('div');
+    addChip.className = 'hud-chip';
+    addChip.style.cssText = 'border-style:dashed;color:var(--gold);border-color:var(--gold);';
+    addChip.textContent = '+ add category';
+    addChip.onclick = () => openAddCategoryPrompt();
+    chipsEl.appendChild(addChip);
+  }
+ 
+  function openAddCategoryPrompt(){
+    const chipsEl = document.getElementById('qaChips');
+    if(!chipsEl || document.getElementById('qaNewCategoryInput')) return;
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;gap:6px;align-items:center;width:100%;margin-top:6px;';
+    wrap.innerHTML =
+      '<input type="text" class="hud-input" id="qaNewCategoryInput" placeholder="new category name" style="width:200px;font-size:12px;padding:6px 8px;">' +
+      '<button class="hud-btn hud-btn-sm" id="qaNewCategorySave">add</button>' +
+      '<button class="hud-btn hud-btn-sm" id="qaNewCategoryCancel" style="border-color:var(--txt-dim);color:var(--txt-dim);">cancel</button>';
+    chipsEl.appendChild(wrap);
+    const input = document.getElementById('qaNewCategoryInput');
+    input.focus();
+    const commit = async () => {
+      const name = input.value.trim();
+      if(!name) return;
+      const existing = allCategoryNames().map(c => c.toLowerCase());
+      if(existing.includes(name.toLowerCase())){ showToast('That category already exists.', true); return; }
+      const color = CUSTOM_PALETTE[customCategories.length % CUSTOM_PALETTE.length];
+      customCategories.push({name, bg: color.bg, text: color.text});
+      await saveCustomCategories();
+      selectedCats.push(name);
+      renderChips();
+      showToast('Category added.');
+    };
+    document.getElementById('qaNewCategorySave').onclick = commit;
+    document.getElementById('qaNewCategoryCancel').onclick = () => renderChips();
+    input.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); commit(); } });
+  }
+ 
+  function resetForm(){
+    ['qaTicketId','qaTicketLink','qaComment','qaResolution','qaImprovement'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    selectedCats = [];
+    renderChips();
+    editingIndex = null;
+    syncEditUI();
+  }
+ 
+  function syncEditUI(){
+    const saveBtn = document.getElementById('qaSaveBtn');
+    const cancelBtn = document.getElementById('qaCancelEditBtn');
+    if(!saveBtn) return;
+    if(editingIndex !== null){
+      saveBtn.textContent = 'Update case';
+      if(cancelBtn) cancelBtn.style.display = 'inline-block';
+    } else {
+      saveBtn.textContent = 'Save case';
+      if(cancelBtn) cancelBtn.style.display = 'none';
+    }
+  }
+ 
+  function refreshReportTable(){
+    renderCaseTable('qaTableWrap', cases[activeMember] || [], {
+      editable: true,
+      emptyText: activeMember ? ('no cases logged yet for ' + activeMember + ' in ' + periodTitle(reportMonth, reportWeek).replace('QA Analysis ', '')) : 'select or add a member to begin',
+      onDelete: () => {
+        if(editingIndex !== null) resetForm();
+        renderRosterList(); refreshReportTable();
+        const period = periodKey(reportMonth, reportWeek);
+        storeCases(activeMember, period, cases[activeMember] || []);
+        storeHistoryCases(activeMember, period, cases[activeMember] || []);
+      },
+      onEdit: (idx) => {
+        const entry = (cases[activeMember] || [])[idx];
+        if(!entry) return;
+        editingIndex = idx;
+        document.getElementById('qaTicketId').value = entry.ticketId || '';
+        document.getElementById('qaTicketLink').value = entry.ticketLink || '';
+        document.getElementById('qaComment').value = entry.comment || '';
+        selectedCats = Array.isArray(entry.category) ? entry.category.slice() : (entry.category ? [entry.category] : []);
+        renderChips();
+        document.getElementById('qaResolution').value = entry.resolution || '';
+        document.getElementById('qaImprovement').value = entry.improvement || '';
+        syncEditUI();
+        showToast('Editing ticket ' + entry.ticketId + '.');
+      }
+    });
+    const statEl = document.getElementById('qaStat');
+    if(statEl){
+      const list = cases[activeMember] || [];
+      statEl.textContent = list.length + (list.length === 1 ? ' case logged' : ' cases logged') + (activeMember ? (' \u2014 ' + activeMember) : '');
+    }
+  }
+ 
+  async function renderReportMain(){
+    editingIndex = null;
+    const panel = document.getElementById('hudMainPanel');
+    panel.innerHTML =
+      '<div class="hud-panel" style="margin-bottom:14px;">' +
+        '<div class="hud-row">' +
+          '<div><div class="hud-label">Zendesk ticket ID</div><input type="text" class="hud-input" id="qaTicketId" placeholder="e.g. 128934"></div>' +
+          '<div><div class="hud-label">Zendesk ticket link</div><input type="text" class="hud-input" id="qaTicketLink" placeholder="https://..."></div>' +
+        '</div>' +
+        '<div style="margin-bottom:10px;"><div class="hud-label">Comment / issue description</div><textarea class="hud-textarea" id="qaComment" placeholder="Type your comment. Press enter for a new bullet point."></textarea></div>' +
+        '<div style="margin-bottom:10px;"><div class="hud-label">Error category \u2014 select all that apply</div><div class="hud-chips" id="qaChips"></div></div>' +
+        '<div style="margin-bottom:10px;"><button class="hud-btn hud-btn-sm" id="qaSuggestBtn" style="border-color:var(--gold);color:var(--gold);"><i class="ti ti-sparkles" aria-hidden="true"></i> AI suggest (short)</button><span class="hud-msg" id="qaSuggestMsg"></span></div>' +
+        '<div class="hud-row">' +
+          '<div><div class="hud-label">Resolution</div><textarea class="hud-textarea" id="qaResolution" placeholder="what was done to resolve it" style="min-height:40px;"></textarea></div>' +
+          '<div><div class="hud-label">Point of improvement</div><textarea class="hud-textarea" id="qaImprovement" placeholder="what to do differently next time" style="min-height:40px;"></textarea></div>' +
+        '</div>' +
+        '<button class="hud-btn primary" id="qaSaveBtn">Save case</button>' +
+        '<button class="hud-btn hud-btn-sm" id="qaCancelEditBtn" style="display:none;border-color:var(--gold);color:var(--gold);">Cancel edit</button>' +
+        '<button class="hud-btn hud-btn-sm" id="qaResetBtn" style="border-color:var(--txt-dim);color:var(--txt-dim);">Reset form</button>' +
+        '<button class="hud-btn hud-btn-sm" id="qaClearWeekBtn" style="border-color:var(--red);color:var(--red);">Clear this week\u2019s report</button>' +
+        '<span class="hud-msg" id="qaSaveMsg"></span>' +
+      '</div>' +
+      '<div class="hud-toolbar">' +
+        '<div><span class="hud-stat" id="qaStat">0 cases logged</span><div style="font-size:10.5px;color:var(--txt-dim);margin-top:2px;" id="qaExportPreview"></div></div>' +
+        '<div class="hud-btns">' +
+          '<button class="hud-btn hud-btn-sm" id="qaCopyBtn">copy for excel</button>' +
+          '<button class="hud-btn hud-btn-sm" id="qaXlsxBtn">export excel (member)</button>' +
+          '<button class="hud-btn hud-btn-sm" id="qaXlsxAllBtn">export excel (all \u2014 tabs)</button>' +
+          '<button class="hud-btn hud-btn-sm" id="qaJsonAllBtn" style="border-color:var(--green);color:var(--green);">export JSON (all)</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="hud-panel" style="padding:0;overflow-x:auto;"><div id="qaTableWrap"></div></div>';
+ 
+    renderChips();
+    setupBulletTextarea(document.getElementById('qaComment'));
+    refreshReportTable();
+    updateReportPeriodTitle();
+    syncEditUI();
+ 
+    document.getElementById('qaResetBtn').onclick = resetForm;
+    document.getElementById('qaCancelEditBtn').onclick = () => { resetForm(); showToast('Edit cancelled.'); };
+    document.getElementById('qaClearWeekBtn').onclick = async () => {
+      if(!members.length) return;
+      if(!window.confirm('Clear every case from the current QA report week? Archived History will not be changed.')) return;
+      const period = periodKey(reportMonth, reportWeek);
+      await Promise.all(members.map(async m => { cases[m] = []; await storeCases(m, period, []); }));
+      resetForm(); renderRosterList(); refreshReportTable();
+      showToast('Current weekly report cleared. History is preserved.');
+    };
+ 
+    document.getElementById('qaSuggestBtn').onclick = async () => {
+      const comment = document.getElementById('qaComment').value.trim();
+      const suggestMsg = document.getElementById('qaSuggestMsg');
+      if(!comment){ suggestMsg.style.color = 'var(--red)'; suggestMsg.textContent = 'describe the issue first.'; setTimeout(() => suggestMsg.textContent = '', 2500); return; }
+      if(selectedCats.length === 0){ suggestMsg.style.color = 'var(--red)'; suggestMsg.textContent = 'select a category first.'; setTimeout(() => suggestMsg.textContent = '', 2500); return; }
+      const btn = document.getElementById('qaSuggestBtn');
+      btn.disabled = true; suggestMsg.style.color = 'var(--gold)'; suggestMsg.textContent = 'thinking...';
+      try{
+        const prompt = 'QA analyst reviewing a case. Comment: "' + comment + '". Category: ' + selectedCats.join(', ') + '.\n' +
+          'Give two VERY short items, max 12 words each, plain and specific, no fluff:\n' +
+          '"resolution": what fixes this case.\n"improvement": what the member should do differently next time.\n' +
+          'If category is "N/A - No error found", resolution = "No action needed.", improvement = "Continue following current process."\n' +
+          'Reply with ONLY raw JSON, no markdown, exactly: {"resolution":"...","improvement":"..."}';
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 300, messages: [{role: 'user', content: prompt}] })
+        });
+        const data = await response.json();
+        const text = (data.content || []).map(b => b.text || '').join('').trim();
+        const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+        if(parsed.resolution) document.getElementById('qaResolution').value = parsed.resolution;
+        if(parsed.improvement) document.getElementById('qaImprovement').value = parsed.improvement;
+        suggestMsg.style.color = 'var(--green)'; suggestMsg.textContent = 'suggested \u2014 review before saving.';
+      }catch(e){ suggestMsg.style.color = 'var(--red)'; suggestMsg.textContent = 'suggestion failed, try again.'; }
+      btn.disabled = false;
+      setTimeout(() => suggestMsg.textContent = '', 4000);
+    };
+ 
+    document.getElementById('qaSaveBtn').onclick = async () => {
+      const saveMsg = document.getElementById('qaSaveMsg');
+      if(!activeMember){ saveMsg.style.color = 'var(--red)'; saveMsg.textContent = 'select a member first.'; setTimeout(() => saveMsg.textContent = '', 2500); return; }
+      const ticketId = document.getElementById('qaTicketId').value.trim();
+      if(!ticketId){ saveMsg.style.color = 'var(--red)'; saveMsg.textContent = 'ticket id required.'; setTimeout(() => saveMsg.textContent = '', 2500); return; }
+      if(selectedCats.length === 0){ saveMsg.style.color = 'var(--red)'; saveMsg.textContent = 'select at least one category.'; setTimeout(() => saveMsg.textContent = '', 2500); return; }
+      const baseData = {
+        ticketId,
+        ticketLink: document.getElementById('qaTicketLink').value.trim(),
+        comment: document.getElementById('qaComment').value.trim(),
+        category: selectedCats.slice(),
+        resolution: document.getElementById('qaResolution').value.trim(),
+        improvement: document.getElementById('qaImprovement').value.trim()
+      };
+      if(!cases[activeMember]) cases[activeMember] = [];
+      let wasUpdate = false;
+      if(editingIndex !== null && cases[activeMember][editingIndex]){
+        const existingDate = cases[activeMember][editingIndex].date;
+        cases[activeMember][editingIndex] = Object.assign({}, baseData, {date: existingDate});
+        wasUpdate = true;
+      } else {
+        cases[activeMember].push(Object.assign({}, baseData, {date: new Date().toISOString().slice(0,10)}));
+      }
+      resetForm();
+      renderRosterList();
+      refreshReportTable();
+      const period = periodKey(reportMonth, reportWeek);
+      await storeCases(activeMember, period, cases[activeMember]);
+      await storeHistoryCases(activeMember, period, cases[activeMember]);
+      showToast(wasUpdate ? 'Case updated.' : ('Case saved to ' + periodTitle(reportMonth, reportWeek) + '.'));
+    };
+ 
+    document.getElementById('qaCopyBtn').onclick = async () => {
+      if(!activeMember) return;
+      const tsv = toTsv((cases[activeMember] || []).map(toRowObj), periodTitle(reportMonth, reportWeek));
+      const ok = await copyText(tsv);
+      if(ok) showToast('Copied \u2014 paste into Excel Web.'); else showToast('Copy failed, use export excel instead.', true);
+    };
+    document.getElementById('qaXlsxBtn').onclick = async () => {
+      if(!activeMember) return;
+      const wb = new ExcelJS.Workbook();
+      const title = periodTitle(reportMonth, reportWeek) + ' - ' + activeMember;
+      addSheet(wb, activeMember, (cases[activeMember] || []).map(toRowObj), title);
+      const buf = await wb.xlsx.writeBuffer();
+      downloadBlob(title.replace(/\s+/g, ' ') + '.xlsx', new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+      showToast('Excel file downloaded.');
+    };
+    document.getElementById('qaXlsxAllBtn').onclick = async () => {
+      const wb = new ExcelJS.Workbook();
+      const title = periodTitle(reportMonth, reportWeek);
+      for(const m of members){ if(!cases[m]) cases[m] = await fetchCases(m, periodKey(reportMonth, reportWeek)); addSheet(wb, m, (cases[m] || []).map(toRowObj), title + ' - ' + m); }
+      const buf = await wb.xlsx.writeBuffer();
+      downloadBlob(title + ' - All Members.xlsx', new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+      showToast('Excel file downloaded \u2014 one tab per member.');
+    };
+    document.getElementById('qaJsonAllBtn').onclick = async () => {
+      const period = periodKey(reportMonth, reportWeek);
+      const data = { tool:'qa-case-tracker', version:1, month:reportMonth, week:reportWeek, title:periodTitle(reportMonth, reportWeek), members:{} };
+      for(const m of members){ if(!cases[m]) cases[m] = await fetchCases(m, period); data.members[m] = cases[m]; }
+      downloadBlob(periodTitle(reportMonth, reportWeek) + ' - All Members.json', new Blob([JSON.stringify(data, null, 2)], {type:'application/json'}));
+      showToast('JSON file downloaded.');
+    };
+  }
+ 
+  // ---------- history view ----------
+  function computeCategoryCounts(list){
+    const counts = {};
+    (list || []).forEach(c => {
+      const cats = Array.isArray(c.category) ? c.category : [c.category];
+      cats.forEach(cat => { counts[cat] = (counts[cat] || 0) + 1; });
+    });
+    return counts;
+  }
+ 
+  function renderHistoryLeft(){
+    const panel = document.getElementById('hudLeftPanel');
+    const list = historySelectedTab === 'All' ? historyAllCases : (historyCache[historySelectedTab] || []);
+    const counts = computeCategoryCounts(list);
+    const heading = historySelectedTab === 'All' ? 'All members' : historySelectedTab;
+    let body;
+    if(!list || list.length === 0){
+      body = '<div style="font-size:11px;color:var(--txt-dim);">no cases logged for this period.</div>';
+    } else {
+      const rows = allCategoryNames().filter(cat => counts[cat]).sort((a,b) => counts[b] - counts[a]);
+      body = '<div style="font-size:11px;color:var(--txt-dim);margin-bottom:10px;">' + list.length + (list.length === 1 ? ' case reviewed' : ' cases reviewed') + '</div>' +
+        rows.map(cat => {
+          const col = getCatColor(cat);
+          return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+            '<span class="hud-badge" style="background:' + col.bg + ';color:' + col.text + ';">' + escapeHtml(cat) + '</span>' +
+            '<span style="font-size:12px;font-weight:700;color:var(--txt);">' + counts[cat] + '</span>' +
+            '</div>';
+        }).join('');
+    }
+    let memberInsights = '';
+    if(historySelectedTab === 'All' && list.length){
+      const categoryMembers = {};
+      historyAllCases.forEach(c => (Array.isArray(c.category) ? c.category : [c.category]).forEach(cat => {
+        if(!categoryMembers[cat]) categoryMembers[cat] = {};
+        categoryMembers[cat][c._member] = (categoryMembers[cat][c._member] || 0) + 1;
+      }));
+      const insightRows = Object.keys(categoryMembers).map(cat => {
+        const entries = Object.entries(categoryMembers[cat]);
+        const high = Math.max.apply(null, entries.map(x => x[1]));
+        const names = entries.filter(x => x[1] === high).map(x => x[0] + ' (' + x[1] + ')').join(', ');
+        return '<div style="font-size:11px;margin-bottom:7px;color:var(--txt);"><span style="color:var(--cyan-dim);">' + escapeHtml(cat) + ':</span> ' + escapeHtml(names) + '</div>';
+      }).join('');
+      memberInsights = '<div style="border-top:1px solid var(--border);margin-top:14px;padding-top:12px;"><div class="hud-label">Most tagged member by category</div>' + insightRows + '</div>';
+    }
+    panel.innerHTML =
+      '<div class="hud-label">' + escapeHtml(heading) + ' \u2014 error categories</div>' +
+      body + memberInsights;
+  }
+ 
+  async function loadHistoryData(){
+    const period = periodKey(historyMonth, historyWeek);
+    const results = await Promise.all(members.map(m => fetchHistoryCases(m, period)));
+    if(activeView !== 'history') return false;
+    historyCache = {};
+    historyAllCases = [];
+    members.forEach((m, i) => {
+      const arr = results[i] || [];
+      arr.forEach(c => c._member = m);
+      historyCache[m] = arr;
+      historyAllCases = historyAllCases.concat(arr);
+    });
+    return true;
+  }
+ 
+  async function enterHistoryView(){
+    historySelectedTab = 'All';
+    const ok = await loadHistoryData();
+    if(!ok) return;
+    renderHistoryLeft();
+    renderHistoryMain();
+  }
+ 
+  function renderHistoryMain(){
+    const panel = document.getElementById('hudMainPanel');
+    const tabs = ['All'].concat(members);
+    if(!tabs.includes(historySelectedTab)) historySelectedTab = 'All';
+    const tabsHtml = tabs.map(t => '<div class="hud-chip' + (t === historySelectedTab ? ' on' : '') + '" data-tab="' + escapeHtml(t) + '"' + (t === historySelectedTab ? ' style="background:var(--cyan);color:var(--bg);"' : '') + '>' + escapeHtml(t) + '</div>').join('');
+    panel.innerHTML =
+      '<div class="hud-toolbar">' +
+        '<div class="hud-chips" id="historyTabs">' + tabsHtml + '</div>' +
+        '<div class="hud-btns">' +
+          '<input class="hud-input" type="file" id="historyImportFile" accept=".xlsx" style="width:150px;padding:4px 7px;font-size:11px;"><button class="hud-btn hud-btn-sm" id="historyImportBtn">import Excel</button>' +
+          '<input class="hud-input" type="file" id="historyImportJsonFile" accept=".json" style="width:150px;padding:4px 7px;font-size:11px;"><button class="hud-btn hud-btn-sm" id="historyImportJsonBtn" style="border-color:var(--green);color:var(--green);">import JSON</button>' +
+          '<button class="hud-btn hud-btn-sm" id="historyExportBtn">export excel (this period \u2014 tabs)</button>' +
+          '<button class="hud-btn hud-btn-sm" id="historyJsonBtn" style="border-color:var(--green);color:var(--green);">export JSON</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="hud-panel" style="padding:0;overflow-x:auto;"><div id="historyTableWrap"></div></div>';
+    panel.querySelectorAll('[data-tab]').forEach(el => {
+      el.onclick = () => {
+        historySelectedTab = el.getAttribute('data-tab');
+        renderHistoryLeft();
+        renderHistoryMain();
+      };
+    });
+    renderHistoryTableView();
+    document.getElementById('historyExportBtn').onclick = async () => {
+      const wb = new ExcelJS.Workbook();
+      const title = periodTitle(historyMonth, historyWeek);
+      for(const m of members) addSheet(wb, m, (historyCache[m] || []).map(toRowObj), title + ' - ' + m);
+      const buf = await wb.xlsx.writeBuffer();
+      downloadBlob(title + ' - All Members.xlsx', new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+      showToast('Excel file downloaded.');
+    };
+    document.getElementById('historyImportBtn').onclick = importHistoryWorkbook;
+    document.getElementById('historyImportJsonBtn').onclick = importHistoryJson;
+    document.getElementById('historyJsonBtn').onclick = () => {
+      const data = { tool:'qa-case-tracker', version:1, month:historyMonth, week:historyWeek, title:periodTitle(historyMonth, historyWeek), members:{} };
+      members.forEach(m => { data.members[m] = (historyCache[m] || []).map(c => ({ ticketId:c.ticketId, ticketLink:c.ticketLink, comment:c.comment, category:Array.isArray(c.category)?c.category:[c.category], resolution:c.resolution, improvement:c.improvement, date:c.date })); });
+      downloadBlob(periodTitle(historyMonth, historyWeek) + ' - All Members.json', new Blob([JSON.stringify(data, null, 2)], {type:'application/json'}));
+      showToast('JSON file downloaded.');
+    };
+  }
+ 
+  function renderHistoryTableView(){
+    if(historySelectedTab === 'All'){
+      renderCaseTable('historyTableWrap', historyAllCases, {editable:false, showMember:true, showReview:true, emptyText:'no cases logged for ' + periodTitle(historyMonth, historyWeek).replace('QA Analysis ', '')});
+    } else {
+      renderCaseTable('historyTableWrap', historyCache[historySelectedTab] || [], {editable:false, showMember:false, showReview:true, emptyText:'no cases logged for ' + historySelectedTab + ' in ' + periodTitle(historyMonth, historyWeek).replace('QA Analysis ', '')});
+    }
+  }
+ 
+  function excelCellText(cell){
+    const value = cell && cell.value;
+    if(value && typeof value === 'object') return String(value.text || value.result || value.hyperlink || (cell && cell.text) || '');
+    return String(value === undefined || value === null ? '' : value);
+  }
+ 
+  async function importHistoryWorkbook(){
+    const fileInput = document.getElementById('historyImportFile');
+    const file = fileInput && fileInput.files && fileInput.files[0];
+    if(!file){ showToast('Choose an Excel file first.', true); return; }
+    if(typeof ExcelJS === 'undefined'){ showToast('Excel import library did not load.', true); return; }
+    try{
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(await file.arrayBuffer());
+      const period = periodKey(historyMonth, historyWeek);
+      let imported = 0;
+      let membersAdded = false;
+      for(const ws of workbook.worksheets){
+        let headerRowNumber = 0;
+        let headerMap = {};
+        ws.eachRow({includeEmpty:false}, (row, rowNumber) => {
+          if(headerRowNumber) return;
+          const values = row.values.slice(1).map(v => String(v && typeof v === 'object' ? (v.text || v.result || '') : (v || '')).trim());
+          if(values.includes('Zendesk Ticket ID')){
+            headerRowNumber = rowNumber;
+            values.forEach((v, i) => { headerMap[v] = i + 1; });
+          }
+        });
+        if(!headerRowNumber) continue;
+        const member = ws.name.trim() || 'Imported member';
+        if(!members.includes(member)){ members.push(member); membersAdded = true; }
+        const existing = (await fetchHistoryCases(member, period)) || [];
+        const rows = ws.getRows(headerRowNumber + 1, Math.max(0, ws.actualRowCount - headerRowNumber)) || [];
+        rows.forEach(row => {
+          const ticketId = excelCellText(row.getCell(headerMap['Zendesk Ticket ID']));
+          if(!ticketId) return;
+          const linkCell = row.getCell(headerMap['Zendesk Ticket Link']);
+          const linkValue = linkCell.value;
+          const ticketLink = linkValue && typeof linkValue === 'object' && linkValue.hyperlink ? linkValue.hyperlink : excelCellText(linkCell);
+          const categoryText = excelCellText(row.getCell(headerMap['Error Category']));
+          const entry = { ticketId, ticketLink, comment:excelCellText(row.getCell(headerMap['Comment'])), category:categoryText.split(';').map(x => x.trim()).filter(Boolean), resolution:excelCellText(row.getCell(headerMap['Resolution'])), improvement:excelCellText(row.getCell(headerMap['Point of Improvement'])), date:excelCellText(row.getCell(headerMap['Date Reviewed'])) };
+          const duplicate = existing.some(c => c.ticketId === entry.ticketId && c.date === entry.date);
+          if(!duplicate){ existing.push(entry); imported++; }
+        });
+        await storeHistoryCases(member, period, existing);
+      }
+      if(membersAdded) await saveMembers();
+      fileInput.value = '';
+      await loadHistoryData();
+      renderHistoryLeft();
+      renderHistoryMain();
+      showToast(imported + ' case(s) imported into History.');
+    }catch(e){ showToast('Excel import failed: ' + (e.message || 'invalid .xlsx file'), true); }
+  }
+ 
+  async function importHistoryJson(){
+    const fileInput = document.getElementById('historyImportJsonFile');
+    const file = fileInput && fileInput.files && fileInput.files[0];
+    if(!file){ showToast('Choose a JSON file first.', true); return; }
+    try{
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if(!data || typeof data.members !== 'object') throw new Error('bad format');
+      const period = periodKey(historyMonth, historyWeek);
+      let imported = 0;
+      let membersAdded = false;
+      for(const member of Object.keys(data.members)){
+        if(!members.includes(member)){ members.push(member); membersAdded = true; }
+        const incoming = Array.isArray(data.members[member]) ? data.members[member] : [];
+        const existing = (await fetchHistoryCases(member, period)) || [];
+        incoming.forEach(entry => {
+          if(!entry || !entry.ticketId) return;
+          const cat = Array.isArray(entry.category) ? entry.category : (entry.category ? [entry.category] : []);
+          const clean = { ticketId: entry.ticketId, ticketLink: entry.ticketLink || '', comment: entry.comment || '', category: cat, resolution: entry.resolution || '', improvement: entry.improvement || '', date: entry.date || '' };
+          const duplicate = existing.some(c => c.ticketId === clean.ticketId && c.date === clean.date);
+          if(!duplicate){ existing.push(clean); imported++; }
+        });
+        await storeHistoryCases(member, period, existing);
+      }
+      if(membersAdded) await saveMembers();
+      fileInput.value = '';
+      await loadHistoryData();
+      renderHistoryLeft();
+      renderHistoryMain();
+      showToast(imported + ' case(s) imported into History.');
+    }catch(e){ showToast('JSON import failed: ' + (e.message || 'invalid JSON file'), true); }
+  }
+
+  // ---------- manager approval view ----------
+  async function loadManagerData(){
+    const period = periodKey(managerMonth, managerWeek);
+    const results = await Promise.all(members.map(m => fetchHistoryCases(m, period)));
+    managerCache = {}; managerAllCases = [];
+    members.forEach((m, i) => {
+      const list = results[i] || [];
+      list.forEach((c, sourceIndex) => { c._member = m; c._sourceIndex = sourceIndex; });
+      managerCache[m] = list;
+      managerAllCases = managerAllCases.concat(list.filter(c => !(Array.isArray(c.category) ? c.category : [c.category]).includes('N/A - No error found')));
+    });
+  }
+
+  function managerCategoryOptions(selected){
+    return allCategoryNames().map(cat => '<option value="' + escapeHtml(cat) + '"' + (selected.includes(cat) ? ' selected' : '') + '>' + escapeHtml(cat) + '</option>').join('');
+  }
+
+  function managerCategoryBadges(categories){
+    if(!categories.length) return '<span style="font-size:11px;color:var(--txt-dim);">no category selected</span>';
+    return categories.map(cat => { const col = getCatColor(cat); return '<span class="hud-badge" style="background:' + col.bg + ';color:' + col.text + ';">' + escapeHtml(cat) + '</span>'; }).join('');
+  }
+
+  function managerDropdownOptions(categories){
+    return allCategoryNames().map(cat => '<button type="button" class="manager-category-option' + (categories.includes(cat) ? ' on' : '') + '" data-category="' + escapeHtml(cat) + '"><span class="manager-category-dot">✓</span><span>' + escapeHtml(cat) + '</span></button>').join('');
+  }
+
+  function renderManagerLeft(){
+    const pending = managerAllCases.filter(c => !c.managerStatus || c.managerStatus === 'Pending').length;
+    const approved = managerAllCases.filter(c => c.managerStatus === 'Approved').length;
+    const rejected = managerAllCases.filter(c => c.managerStatus === 'Rejected').length;
+    document.getElementById('hudLeftPanel').innerHTML =
+      '<div class="hud-label">Manager review status</div>' +
+      '<div style="font-size:12px;line-height:1.9;"><div>Total cases: <b>' + managerAllCases.length + '</b></div><div style="color:var(--gold);">Pending: <b>' + pending + '</b></div><div style="color:var(--green);">Approved: <b>' + approved + '</b></div><div style="color:var(--red);">Rejected: <b>' + rejected + '</b></div></div>' +
+      '<div style="border-top:1px solid var(--border);margin-top:14px;padding-top:12px;font-size:11px;color:var(--txt-dim);">Review each case, then mark the entire period as reviewed.</div>';
+  }
+
+  function renderManagerMain(){
+    const panel = document.getElementById('hudMainPanel');
+    const pending = managerAllCases.filter(c => !c.managerStatus || c.managerStatus === 'Pending').length;
+    const rows = managerAllCases.map(c => {
+      const member = c._member;
+      const index = c._sourceIndex;
+      const cats = Array.isArray(c.category) ? c.category : (c.category ? [c.category] : []);
+      return '<tr data-member="' + escapeHtml(member) + '" data-index="' + index + '">' +
+        '<td>' + escapeHtml(member) + '</td><td>' + escapeHtml(c.ticketId) + '</td><td style="max-width:180px;">' + escapeHtml(c.comment).replace(/\n/g, '<br>') + '</td>' +
+        '<td><div class="manager-category-picker"><div class="manager-original-categories">' + managerCategoryBadges(cats) + '</div><input type="hidden" class="manager-categories" value="' + escapeHtml(JSON.stringify(cats)) + '"><button type="button" class="hud-btn hud-btn-sm manager-category-toggle">change categories ▾</button><div class="manager-category-options">' + managerDropdownOptions(cats) + '</div></div></td>' +
+        '<td style="max-width:155px;">' + escapeHtml(c.resolution) + '</td><td style="max-width:155px;">' + escapeHtml(c.improvement) + '</td>' +
+        '<td><select class="hud-select manager-status"><option' + ((!c.managerStatus || c.managerStatus === 'Pending') ? ' selected' : '') + '>Pending</option><option' + (c.managerStatus === 'Approved' ? ' selected' : '') + '>Approved</option><option' + (c.managerStatus === 'Rejected' ? ' selected' : '') + '>Rejected</option></select><textarea class="hud-textarea manager-comment" placeholder="manager comment" style="margin-top:5px;min-width:155px;">' + escapeHtml(c.managerComment) + '</textarea><button class="hud-btn hud-btn-sm manager-save" style="margin-top:5px;">save review</button></td>' +
+        '</tr>';
+    }).join('');
+    panel.innerHTML =
+      '<div class="hud-panel" style="margin-bottom:14px;"><div class="hud-row"><div><div class="hud-label">Manager name</div><input class="hud-input" id="managerNameInput" placeholder="name of reviewer" value="' + escapeHtml(managerName) + '"></div><div><div class="hud-label">Finalise weekly review</div><button class="hud-btn primary" id="managerFinalizeBtn"' + (pending ? ' disabled title="Review every case first"' : '') + '>Reviewed by ' + escapeHtml(managerName || 'manager') + '</button><div style="font-size:11px;color:var(--txt-dim);margin-top:5px;">' + (pending ? pending + ' case(s) still pending.' : 'All cases have a decision.') + '</div></div></div></div>' +
+      '<div class="hud-panel" style="padding:0;overflow-x:auto;"><table class="hud-table"><thead><tr><th>Member</th><th>Ticket ID</th><th>Comment</th><th>Error categories</th><th>Resolution</th><th>Point of improvement</th><th>Manager decision</th></tr></thead><tbody>' + (rows || '<tr><td colspan="7" class="hud-empty">no error cases need manager review for this period</td></tr>') + '</tbody></table></div>';
+    const bindManagerCategoryOption = btn => btn.onclick = () => {
+      const picker = btn.closest('.manager-category-picker');
+      const input = picker.querySelector('.manager-categories');
+      let selected = [];
+      try{ selected = JSON.parse(input.value); }catch(e){}
+      const category = btn.getAttribute('data-category');
+      selected = selected.includes(category) ? selected.filter(c => c !== category) : selected.concat(category);
+      input.value = JSON.stringify(selected);
+      picker.querySelector('.manager-original-categories').innerHTML = managerCategoryBadges(selected);
+      picker.querySelector('.manager-category-options').innerHTML = managerDropdownOptions(selected);
+      picker.querySelectorAll('.manager-category-option').forEach(bindManagerCategoryOption);
+    };
+    panel.querySelectorAll('.manager-save').forEach(btn => btn.onclick = () => saveManagerCase(btn.closest('tr')));
+    panel.querySelectorAll('.manager-category-toggle').forEach(btn => btn.onclick = () => btn.parentElement.querySelector('.manager-category-options').classList.toggle('open'));
+    panel.querySelectorAll('.manager-category-option').forEach(bindManagerCategoryOption);
+    document.getElementById('managerNameInput').onchange = async e => { managerName = e.target.value.trim(); await saveManagerName(managerName); renderManagerMain(); };
+    document.getElementById('managerFinalizeBtn').onclick = finalizeManagerReview;
+  }
+
+  async function saveManagerCase(row){
+    const member = row.getAttribute('data-member');
+    const index = Number(row.getAttribute('data-index'));
+    const entry = managerCache[member] && managerCache[member][index];
+    if(!entry) return;
+    let selected = [];
+    try{ selected = JSON.parse(row.querySelector('.manager-categories').value); }catch(e){}
+    entry.category = selected;
+    entry.managerStatus = row.querySelector('.manager-status').value;
+    entry.managerComment = row.querySelector('.manager-comment').value.trim();
+    if(managerName && entry.managerStatus === 'Approved') entry.approvedBy = managerName;
+    await storeHistoryCases(member, periodKey(managerMonth, managerWeek), managerCache[member]);
+    showToast('Manager review saved.');
+    await enterManagerView();
+  }
+
+  async function finalizeManagerReview(){
+    managerName = document.getElementById('managerNameInput').value.trim();
+    if(!managerName){ showToast('Enter the manager name first.', true); return; }
+    if(managerAllCases.some(c => !c.managerStatus || c.managerStatus === 'Pending')){ showToast('Every case needs an approval decision first.', true); return; }
+    await saveManagerName(managerName);
+    const period = periodKey(managerMonth, managerWeek);
+    await Promise.all(members.map(async member => {
+      const list = managerCache[member] || [];
+      list.forEach(c => { if(!(Array.isArray(c.category) ? c.category : [c.category]).includes('N/A - No error found')){ c.reviewedBy = managerName; if(c.managerStatus === 'Approved') c.approvedBy = managerName; } });
+      await storeHistoryCases(member, period, list);
+    }));
+    showToast('Period marked as reviewed by ' + managerName + '.');
+    await enterManagerView();
+  }
+
+  async function enterManagerView(){
+    await loadManagerData();
+    renderManagerLeft();
+    renderManagerMain();
+  }
+
+  // ---------- export helpers ----------
+  function toRowObj(c){
+    return { ticketId:c.ticketId, ticketLink:c.ticketLink, comment:c.comment, category:(Array.isArray(c.category)?c.category:[c.category]).join('; '), resolution:c.resolution, improvement:c.improvement, date:c.date, approvedBy:c.approvedBy || '' };
+  }
+  const headers = ['Zendesk Ticket ID','Zendesk Ticket Link','Comment','Error Category','Resolution','Point of Improvement','Date Reviewed','Approved By'];
+  function toTsv(rows, title){
+    const esc = v => String(v || '').replace(/\t/g, ' ').replace(/\n/g, ' | ');
+    const lines = [title, headers.map(esc).join('\t')].concat(rows.map(c => [c.ticketId,c.ticketLink,c.comment,c.category,c.resolution,c.improvement,c.date,c.approvedBy].map(esc).join('\t')));
+    return lines.join('\n');
+  }
+  function downloadBlob(filename, blob){
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  function addSheet(workbook, sheetName, rowObjs, titleText){
+    const safeName = sheetName.substring(0, 31).replace(/[\\\/\?\*\[\]:]/g, ' ');
+    const ws = workbook.addWorksheet(safeName || 'Sheet');
+    ws.columns = [16,32,42,30,32,32,14,20].map(w => ({width:w}));
+    ws.mergeCells(1,1,1,8);
+    const titleCell = ws.getCell(1,1);
+    titleCell.value = titleText;
+    titleCell.font = {bold:true, size:13};
+    titleCell.alignment = {horizontal:'left'};
+    const headerRow = ws.getRow(2);
+    headerRow.values = headers;
+    headerRow.font = {bold:true, color:{argb:'FFFFFFFF'}};
+    headerRow.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FF146E78'}};
+    headerRow.alignment = {wrapText:true, vertical:'center', horizontal:'left'};
+    rowObjs.forEach(r => ws.addRow([r.ticketId, r.ticketLink, r.comment, r.category, r.resolution, r.improvement, r.date, r.approvedBy]));
+    ws.eachRow((row, rowNumber) => {
+      if(rowNumber >= 2){
+        row.eachCell(cell => { cell.alignment = {wrapText:true, vertical:'top', horizontal:'left'}; cell.border = {bottom:{style:'hair', color:{argb:'3320AAB5'}}}; });
+        if(rowNumber > 2) row.height = 36;
+      }
+    });
+    ws.autoFilter = {from:{row:2,column:1}, to:{row:2,column:8}};
+    ws.views = [{state:'frozen', ySplit:2}];
+  }
+ 
+  // ---------- init ----------
+  document.getElementById('navReport').onclick = async () => { activeView = 'report'; renderNav(); renderPeriodMini(); renderReportLeft(); await renderReportMain(); };
+  document.getElementById('navHistory').onclick = async () => { activeView = 'history'; renderNav(); renderPeriodMini(); document.getElementById('hudLeftPanel').innerHTML = ''; document.getElementById('hudMainPanel').innerHTML = '<div class="hud-panel"><div class="hud-empty">loading...</div></div>'; await enterHistoryView(); };
+  document.getElementById('navManager').onclick = async () => { activeView = 'manager'; renderNav(); renderPeriodMini(); document.getElementById('hudLeftPanel').innerHTML = ''; document.getElementById('hudMainPanel').innerHTML = '<div class="hud-panel"><div class="hud-empty">loading...</div></div>'; await enterManagerView(); };
+  document.getElementById('qaThemeToggle').onclick = async () => { theme = theme === 'dark' ? 'light' : 'dark'; applyTheme(); await saveTheme(theme); };
+ 
+  (async function init(){
+    theme = await loadTheme(); applyTheme();
+    userName = await loadName(); renderGreeting();
+    const savedPeriod = await loadReportPeriod();
+    if(savedPeriod){ reportMonth = savedPeriod.month; reportWeek = savedPeriod.week; historyMonth = savedPeriod.month; historyWeek = savedPeriod.week; managerMonth = savedPeriod.month; managerWeek = savedPeriod.week; }
+    managerName = await loadManagerName();
+    await loadCustomCategories();
+    await loadMembers();
+    await reloadReportPeriod();
+    activeView = 'report';
+    renderNav();
+    renderPeriodMini();
+    renderReportLeft();
+    if(members.length > 0) await selectMember(members[0]); else await renderReportMain();
+  })();
+})();
+</script>
+ 
+
+
